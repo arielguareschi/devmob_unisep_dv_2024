@@ -24,6 +24,11 @@ class Data {
     this.ano = 1900,
   });
 
+  Data.ultimoDiaAno(this.ano) {
+    dia = 31;
+    mes = 12;
+  }
+
   String obterData() {
     return "$dia/$mes/$ano";
   }
@@ -35,9 +40,9 @@ class Data {
 
 main() {
   var dataAniversario = Data(4, 6, 1987);
-  // dataAniversario.dia = 4;
-  // dataAniversario.mes = 6;
-  // dataAniversario.ano = 1987;
+  dataAniversario.dia = 4;
+  dataAniversario.mes = 6;
+  dataAniversario.ano = 1987;
 
   print(dataAniversario.obterData());
   print(dataAniversario);
@@ -50,4 +55,8 @@ main() {
     ano: 2024,
   );
   print(dataHoje);
+  // crie um construtor nomeado na classe data
+  // com o nome de ultimoDiaDoAno, que receberá
+  // somente o ano, e vai assumir o ultimo dia
+  // daquele ano.
 }
