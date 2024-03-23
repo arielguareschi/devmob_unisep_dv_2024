@@ -8,6 +8,6 @@ class Produto {
     this.codigo,
     this.nome,
     this.preco,
-    this.desconto,
+    this.desconto = 0,
   });
 }
