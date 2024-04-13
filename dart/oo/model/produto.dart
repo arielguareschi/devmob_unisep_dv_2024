@@ -10,4 +10,8 @@ class Produto {
     this.preco,
     this.desconto = 0,
   });
+
+  double get precoComDesconto {
+    return (1 - desconto!) * preco!;
+  }
 }
