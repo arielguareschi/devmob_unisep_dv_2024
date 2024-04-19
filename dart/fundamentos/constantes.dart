@@ -20,5 +20,5 @@ main() {
   qualquer_coisa = 123;
 
   var teste = "teste";
-  teste = 123;
+  // teste = 123;
 }
