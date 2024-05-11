@@ -35,6 +35,13 @@ class Resultado extends StatelessWidget {
             ),
           ),
         ),
+        Text(
+          "Pontuação $pontuacao",
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 14.0,
+          ),
+        ),
         TextButton(
           onPressed: quandoReiniciarQuestionario,
           child: const Text(

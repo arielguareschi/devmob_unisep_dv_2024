@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:perguntados/questao.dart';
+import 'package:perguntados/questionario.dart';
+import 'package:perguntados/resultado.dart';
 
-void main() {
-  runApp(const PerguntadosApp());
-}
+void main() => runApp(const PerguntadosApp());
 
 class PerguntadosApp extends StatefulWidget {
   const PerguntadosApp({super.key});
@@ -13,8 +12,8 @@ class PerguntadosApp extends StatefulWidget {
 }
 
 class _PerguntadosAppState extends State<PerguntadosApp> {
-  final _perguntaSelecionada = 0;
-  final _pontuacaoTotal = 0;
+  var _perguntaSelecionada = 0;
+  var _pontuacaoTotal = 0;
 
   final _perguntas = const [
     {
@@ -25,78 +24,78 @@ class _PerguntadosAppState extends State<PerguntadosApp> {
         {'texto': 'Inter', 'pontuacao': 1},
       ],
     },
-    'Qual seu time?',
-    'Qual seu animal favorito?',
-    'O Palmeiras tem mundial?',
-    'Qual seu genero?',
+    {
+      'texto': 'Qual seu animal favorito?',
+      'respostas': [
+        {'texto': 'Coelho', 'pontuacao': 10},
+        {'texto': 'Cobra', 'pontuacao': 5},
+        {'texto': 'Elefante', 'pontuacao': 3},
+        {'texto': 'Leão', 'pontuacao': 1},
+      ],
+    },
+    {
+      'texto': 'Palmeiras tem mundial?',
+      'respostas': [
+        {'texto': 'Sim', 'pontuacao': 0},
+        {'texto': 'Nao', 'pontuacao': 10},
+      ],
+    },
+    {
+      'texto': 'Qual seu genero?',
+      'respostas': [
+        {'texto': 'Sim', 'pontuacao': 0},
+        {'texto': 'Nao', 'pontuacao': 10},
+      ],
+    },
   ];
 
-  void responder() {
+  void _responder(int pontuacao) {
+    if (temPerguntaSelecionada) {
+      setState(() {
+        _perguntaSelecionada++;
+        _pontuacaoTotal += pontuacao;
+      });
+    }
+  }
+
+  void _reiniciarQuestionario() {
     setState(() {
-      if (perguntaSelecionada >= perguntas.length - 1) {
-        perguntaSelecionada = 0;
-      } else {
-        perguntaSelecionada++;
-      }
+      _perguntaSelecionada = 0;
+      _pontuacaoTotal = 0;
     });
-    print(perguntaSelecionada);
+  }
+
+  bool get temPerguntaSelecionada {
+    return _perguntaSelecionada < _perguntas.length;
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Perguntados'),
-        ),
-        body: Column(
-          children: [
-            // PERGUNTA
-            Questao(
-              perguntas: perguntas,
-              perguntaSelecionada: perguntaSelecionada,
-            ),
-            // RESPOSTA 1
-            Container(
-              margin: const EdgeInsets.all(10),
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                ),
-                onPressed: responder,
-                child: const Text('Resposta 1'),
+          actions: [
+            IconButton(
+              onPressed: () => _reiniciarQuestionario(),
+              icon: const Icon(
+                Icons.refresh,
+                color: Colors.red,
               ),
-            ),
-            // RESPOSTA 2
-            Container(
-              width: double.infinity,
-              margin: const EdgeInsets.all(10),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                ),
-                onPressed: responder,
-                child: const Text('Resposta 2'),
-              ),
-            ),
-            // RESPOSTA 3
-            Container(
-              width: double.infinity,
-              margin: const EdgeInsets.all(10),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                ),
-                onPressed: responder,
-                child: const Text('Resposta 3'),
-              ),
-            ),
+            )
           ],
         ),
+        body: temPerguntaSelecionada
+            ? Questionario(
+                perguntas: _perguntas,
+                perguntaSelecionada: _perguntaSelecionada,
+                quandoResponder: _responder,
+              )
+            : Resultado(
+                _pontuacaoTotal,
+                _reiniciarQuestionario,
+              ),
       ),
     );
   }
