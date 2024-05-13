@@ -27,6 +27,66 @@ class _TransacaoUsuarioState extends State<TransacaoUsuario> {
       valor: 211.76,
       data: DateTime.now(),
     ),
+    Transacao(
+      id: 't1',
+      titulo: 'Novo Tenis',
+      valor: 310.76,
+      data: DateTime.now(),
+    ),
+    Transacao(
+      id: 't2',
+      titulo: 'Outro Tenis',
+      valor: 211.76,
+      data: DateTime.now(),
+    ),
+    Transacao(
+      id: 't1',
+      titulo: 'Novo Tenis',
+      valor: 310.76,
+      data: DateTime.now(),
+    ),
+    Transacao(
+      id: 't2',
+      titulo: 'Outro Tenis',
+      valor: 211.76,
+      data: DateTime.now(),
+    ),
+    Transacao(
+      id: 't1',
+      titulo: 'Novo Tenis',
+      valor: 310.76,
+      data: DateTime.now(),
+    ),
+    Transacao(
+      id: 't2',
+      titulo: 'Outro Tenis',
+      valor: 211.76,
+      data: DateTime.now(),
+    ),
+    Transacao(
+      id: 't1',
+      titulo: 'Novo Tenis',
+      valor: 310.76,
+      data: DateTime.now(),
+    ),
+    Transacao(
+      id: 't2',
+      titulo: 'Outro Tenis',
+      valor: 211.76,
+      data: DateTime.now(),
+    ),
+    Transacao(
+      id: 't1',
+      titulo: 'Novo Tenis',
+      valor: 310.76,
+      data: DateTime.now(),
+    ),
+    Transacao(
+      id: 't2',
+      titulo: 'Outro Tenis',
+      valor: 211.76,
+      data: DateTime.now(),
+    ),
   ];
 
   _addTransacao(String titulo, double valor) {
@@ -46,8 +106,8 @@ class _TransacaoUsuarioState extends State<TransacaoUsuario> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        TransacaoLista(_transacoes),
         TransacaoForm(_addTransacao),
+        TransacaoLista(_transacoes),
       ],
     );
   }
