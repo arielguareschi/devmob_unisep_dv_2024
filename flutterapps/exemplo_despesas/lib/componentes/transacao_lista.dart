@@ -4,64 +4,85 @@ import 'package:intl/intl.dart';
 
 class TransacaoLista extends StatelessWidget {
   final List<Transacao> transacoes;
+  final void Function(String) onRemove;
 
-  const TransacaoLista(this.transacoes, {super.key});
+  const TransacaoLista(this.transacoes, this.onRemove, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 300,
-      child: ListView.builder(
-        itemCount: transacoes.length,
-        itemBuilder: (ctx, index) {
-          final tr = transacoes[index];
-          return Card(
-            child: Row(
-              children: [
-                Container(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 15,
-                    vertical: 10,
+    return transacoes.isEmpty
+        ? LayoutBuilder(
+            builder: (ctx, constraints) {
+              return Column(
+                children: [
+                  const SizedBox(height: 20),
+                  Text(
+                    'Nenhuma Transação Cadastrada!',
+                    style: Theme.of(context).textTheme.titleLarge,
                   ),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.purple,
-                      width: 2,
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    height: constraints.maxHeight * 0.6,
+                    child: Image.asset(
+                      'assets/images/waiting.png',
+                      fit: BoxFit.cover,
                     ),
                   ),
-                  padding: const EdgeInsets.all(10),
-                  child: Text(
-                    'R\$ ${tr.valor.toStringAsFixed(2)}',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      color: Colors.purple,
-                    ),
-                  ),
+                ],
+              );
+            },
+          )
+        : ListView.builder(
+            itemCount: transacoes.length,
+            itemBuilder: (ctx, index) {
+              final tr = transacoes[index];
+              return Card(
+                elevation: 5,
+                margin: const EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 5,
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
+                child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.purple,
+                      radius: 30,
+                      child: Padding(
+                        padding: const EdgeInsets.all(6),
+                        child: FittedBox(
+                          child: Text(
+                            'R\$${tr.valor}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    title: Text(
                       tr.titulo,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
-                    Text(
+                    subtitle: Text(
                       DateFormat('d MMM y').format(tr.data),
-                      style: const TextStyle(
-                        color: Colors.grey,
-                      ),
                     ),
-                  ],
-                ),
-              ],
-            ),
+                    trailing: MediaQuery.of(context).size.width > 480
+                        ? TextButton.icon(
+                            onPressed: () => onRemove(tr.id),
+                            icon: Icon(Icons.delete,
+                                color: Theme.of(context).colorScheme.error),
+                            label: Text(
+                              'Excluir',
+                              style: TextStyle(
+                                  color: Theme.of(context).colorScheme.error),
+                            ),
+                          )
+                        : IconButton(
+                            icon: const Icon(Icons.delete),
+                            color: Theme.of(context).colorScheme.error,
+                            onPressed: () => onRemove(tr.id),
+                          )),
+              );
+            },
           );
-        },
-      ),
-    );
   }
 }
