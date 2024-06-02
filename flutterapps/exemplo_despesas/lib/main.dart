@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:exemplo_despesas/componentes/grafico.dart';
 import 'package:exemplo_despesas/componentes/transacao_form.dart';
 import 'package:exemplo_despesas/componentes/transacao_lista.dart';
+import 'package:exemplo_despesas/controller/transacao_controller.dart';
 import 'package:exemplo_despesas/models/transacao.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -53,15 +54,32 @@ class MinhaInicial extends StatefulWidget {
 }
 
 class _MinhaInicialState extends State<MinhaInicial> {
-  final List<Transacao> _transacoes = [];
+  late Future<List<Transacao>> _transacoes;
   bool _showChart = false;
+  final TransacaoController _controller = TransacaoController();
 
-  List<Transacao> get _transacoesRecentes {
-    return _transacoes.where((tr) {
-      return tr.data.isAfter(DateTime.now().subtract(
-        const Duration(days: 7),
-      ));
-    }).toList();
+  @override
+  initState() {
+    super.initState();
+    _transacoes = _controller.getTransacoes();
+  }
+
+  _refreshTransacao() {
+    setState() {
+      _transacoes = _controller.getTransacoes();
+    }
+  }
+
+  List<Transacao> _transacoesRecentes(List<Transacao> dados) {
+    if (dados.isNotEmpty) {
+      return dados.where((tr) {
+        return tr.data.isAfter(DateTime.now().subtract(
+          const Duration(days: 7),
+        ));
+      }).toList();
+    } else {
+      return [];
+    }
   }
 
   _addTransacao(String titulo, double valor, DateTime data) {
@@ -72,16 +90,14 @@ class _MinhaInicialState extends State<MinhaInicial> {
       data: data,
     );
 
-    setState(() {
-      _transacoes.add(novaTransacao);
-    });
+    _controller.addTransacao(novaTransacao).then(_refreshTransacao());
 
     Navigator.of(context).pop();
   }
 
   _removeTransacao(String id) {
     setState(() {
-      _transacoes.removeWhere((tr) => tr.id == id);
+      _controller.deleteItem(id).then(_refreshTransacao());
     });
   }
 
@@ -134,24 +150,38 @@ class _MinhaInicialState extends State<MinhaInicial> {
         appBar.preferredSize.height -
         mediaQuery.padding.top;
 
-    final bodyPage = SafeArea(
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (_showChart || !isLandscape)
-              SizedBox(
-                height: availableHeight * (isLandscape ? 0.8 : 0.3),
-                child: Grafico(_transacoesRecentes),
-              ),
-            if (!_showChart || !isLandscape)
-              SizedBox(
-                height: availableHeight * (isLandscape ? 1 : 0.7),
-                child: TransacaoLista(_transacoes, _removeTransacao),
-              ),
-          ],
-        ),
-      ),
+    final bodyPage = FutureBuilder<List<Transacao>>(
+      future: _transacoes,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        final items = snapshot.data!;
+
+        return SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (_showChart || !isLandscape)
+                  SizedBox(
+                    height: availableHeight * (isLandscape ? 0.8 : 0.3),
+                    child: (_transacoesRecentes(items).isNotEmpty)
+                        ? Grafico(_transacoesRecentes(items))
+                        : const Text('Não tem items para listar'),
+                  ),
+                if (!_showChart || !isLandscape)
+                  SizedBox(
+                    height: availableHeight * (isLandscape ? 1 : 0.7),
+                    child: TransacaoLista(items, _removeTransacao),
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
     );
 
     return Platform.isIOS

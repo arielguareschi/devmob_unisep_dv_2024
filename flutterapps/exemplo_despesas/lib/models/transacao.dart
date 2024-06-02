@@ -10,4 +10,12 @@ class Transacao {
     required this.valor,
     required this.data,
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'titulo': titulo,
+      'valor': valor,
+      'data': data.toString(),
+    };
+  }
 }
