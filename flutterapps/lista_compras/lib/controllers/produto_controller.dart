@@ -11,6 +11,9 @@ class ProdutoController {
     final response = await http.get(Uri.parse('$baseUrl/items.json'));
     _items.clear();
     if (response.statusCode == 200) {
+      if (response.body == "null") {
+        return _items;
+      }
       Map<String, dynamic> data = jsonDecode(response.body);
       bool filtraDados = false;
       if (comprado != null) filtraDados = true;
